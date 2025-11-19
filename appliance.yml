@@ -1,0 +1,78 @@
+- name: installation de l'instance cloud genomique environnementale
+  hosts: all
+  become: yes
+  become_method: sudo
+
+  tasks:
+
+    
+#     - name: Add an apt key by id from a keyserver
+#       ansible.builtin.apt_key:
+#        keyserver: "hkp://keyserver.ubuntu.com:80"
+#        id: E298A3A825C0D65DFD57CBB651716619E084DAB9
+
+
+#     # - name: ajout du dépot R-4.1
+#     #   apt_repository:
+#     #    repo: deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran40/
+
+#     # - name: Update and upgrade apt packages
+#     #   apt:
+#     #     upgrade: yes
+#     #     update_cache: yes
+#     #     cache_valid_time: 86400 #One day
+
+
+    - name: installation des librairies et packages ubuntu...
+      apt:
+       name: 
+         - libxml2-dev
+         - libncurses5-dev
+         - libtinfo-dev
+         - zlib1g-dev
+         - libbz2-dev
+         - liblzma-dev
+         - libcurl4-openssl-dev
+         - samtools
+         - bedtools
+         - hisat2
+         - igv
+         - python3-matplotlib
+         - python-htseq
+         - libboost-iostreams1.74.0
+         - libssl-dev
+         - build-essential
+         - python3-dev
+#        - python-numphy
+         - python-pysam-tests
+         - python-htseq
+         - unzip
+         - r-base
+         - r-base-dev
+         - bowtie2
+         - fastqc
+         - cutadapt
+         - vsearch
+         - hmmer
+       state: present
+
+
+    - name: installation de quelques packages R
+      command: /usr/bin/Rscript --slave --no-save --no-restore-history -e "install.packages(pkgs='{{ item }}', repos=c('https://pbil.univ-lyon1.fr/CRAN/'))"
+      with_items:
+        - BiocManager
+
+    - name: installation de modules bioconductor
+      command: /usr/bin/Rscript --slave --no-save --no-restore-history -e "BiocManager::install(c('{{ item }}'))"
+      with_items:
+        - dada2
+
+    - name: installation de obitools4
+      shell : |
+        curl -sL https://metabarcoding.org/obitools4/install.sh | bash -
+
+
+    - name: installation de BBMap
+      ansible.builtin.unarchive:
+       src : BBMap_39.01.tar.gz
+       dest : /usr/local
