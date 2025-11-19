@@ -1,4 +1,4 @@
-- name: installation de l'instance cloud genomique environnementale
+- name: installation de l'instance cloud test_app_david
   hosts: all
   become: yes
   become_method: sudo
